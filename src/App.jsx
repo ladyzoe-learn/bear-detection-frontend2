@@ -4,6 +4,15 @@ import { Button } from '@/components/ui/button.jsx'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.jsx'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.jsx'
 import './App.css'
+import { useState } from 'react'
+// ... 其他 import 語句
+
+// 👇 請將 'https://your-backend-name.onrender.com' 替換成您真實的後端網址
+const API_BASE_URL = 'https://your-backend-name.onrender.com'; 
+
+function App() {
+  // ...
+}
 
 function App() {
   const [selectedFile, setSelectedFile] = useState(null)
@@ -30,7 +39,7 @@ function App() {
     formData.append('image', selectedFile)
 
     try {
-      const response = await fetch('/api/detect', {
+      const response = await fetch(`${API_BASE_URL}/api/detect`, {
         method: 'POST',
         body: formData,
       })
