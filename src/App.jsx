@@ -21,7 +21,7 @@ function App() {
         setIsMapLoading(true);
         try {
             // 注意：本地測試時，/api/map 會被代理到後端
-            const response = await fetch('{https://bear-detection-backend2.onrender.com/api/map');
+            const response = await fetch('https://bear-detection-backend2.onrender.com/api/map');
             if (!response.ok) {
                 throw new Error('無法從後端獲取地圖資料');
             }
