@@ -1,10 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Upload, Camera, AlertTriangle, CheckCircle, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button.jsx'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.jsx'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.jsx'
 import './App.css'
-// ... 其他 import 語句
 
 // 👇 請將 'https://your-backend-name.onrender.com' 替換成您真實的後端網址
 const API_BASE_URL = 'https://bear-detection-backend2.onrender.com'; 
@@ -14,6 +13,34 @@ function App() {
   const [isUploading, setIsUploading] = useState(false)
   const [detectionResult, setDetectionResult] = useState(null)
   const [error, setError] = useState(null)
+  const [mapHtml, setMapHtml] = useState('');
+  const [isMapLoading, setIsMapLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMap = async () => {
+        setIsMapLoading(true);
+        try {
+            // 注意：本地測試時，/api/map 會被代理到後端
+            const response = await fetch('{API_BASE_URL}/api/map');
+            if (!response.ok) {
+                throw new Error('無法從後端獲取地圖資料');
+            }
+            const data = await response.json();
+            if (data.success) {
+                setMapHtml(data.map_html);
+            } else {
+                throw new Error(data.error || '獲取地圖資料失敗');
+            }
+        } catch (error) {
+            console.error("載入地圖失敗:", error);
+            setMapHtml('<p style="color: red; text-align: center;">地圖載入失敗</p>');
+        } finally {
+            setIsMapLoading(false);
+        }
+    };
+
+    fetchMap();
+}, []); // 空陣列表示這個 effect 只會在元件初次載入時執行一次ㄧ
 
   const handleFileSelect = (event) => {
     const file = event.target.files[0]
@@ -177,6 +204,28 @@ function App() {
                   </Card>
                 )}
               </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* 地圖顯示區域 */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>地圖顯示區域</CardTitle>
+            <CardDescription>
+              這裡將顯示台灣黑熊的分布地圖
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="relative">
+            {isMapLoading ? (
+              <div className="flex items-center justify-center h-64">
+                <Loader2 className="h-6 w-6 animate-spin text-gray-500" />
+              </div>
+            ) : (
+              <div
+                className="w-full h-64 overflow-auto"
+                dangerouslySetInnerHTML={{ __html: mapHtml }}
+              />
             )}
           </CardContent>
         </Card>
