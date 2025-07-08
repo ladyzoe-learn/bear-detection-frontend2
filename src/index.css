@@ -1,0 +1,7 @@
+/* src/index.css */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 下面可以有您自己寫的其他全域樣式 */
