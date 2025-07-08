@@ -75,55 +75,54 @@ function App() {
     const formData = new FormData();
     const isImageMode = activeTab === 'image';
 
-    // 根據模式決定 API 路徑和表單的 key
-    const apiUrl = isImageMode ? `${API_BASE_URL}/api/detect` : `${API_BASE_URL}/api/detect-video`;
+    // 包含了【修正點一】：修正 API URL
+    const apiUrl = isImageMode 
+        ? `${API_BASE_URL}/api/detect` 
+        : `${API_BASE_URL}/api/analyze_video`;
+
     const formKey = isImageMode ? 'image' : 'video';
     formData.append(formKey, selectedFile);
 
     try {
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error(`伺服器錯誤! 狀態碼: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      if (data.success === false) {
-        throw new Error(data.error || '檢測失敗');
-      }
-
-      // 根據模式，設定不同的結果
-      if (isImageMode) {
-        setDetectionResult({
-          type: 'image', // 新增 type 屬性
-          bear_detected: data.bear_detected,
-          confidence: data.confidence,
-          processed_image: data.processed_image,
-          message: data.bear_detected 
-            ? `在圖片中偵測到台灣黑熊！信心度: ${Math.round(data.confidence * 100)}%`
-            : '未在圖片中偵測到台灣黑熊'
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            body: formData,
         });
-      } else { // 影片模式的結果處理
-        const framesWithBear = data.results.filter(r => r.bear_detected);
-        const warningFrames = data.results.filter(r => r.bear_warning_triggered);
-        setDetectionResult({
-          type: 'video', // 新增 type 屬性
-          total_frames: data.total_frames_processed,
-          bear_frames_count: framesWithBear.length,
-          warning_triggered: warningFrames.length > 0,
-          results: data.results, // 保留完整結果供詳細檢視
-        });
-      }
+
+        if (!response.ok) {
+            throw new Error(`伺服器錯誤! 狀態碼: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.success === false) {
+            throw new Error(data.error || '檢測失敗');
+        }
+
+        if (isImageMode) {
+            setDetectionResult({
+                type: 'image',
+                bear_detected: data.bear_detected,
+                confidence: data.confidence,
+                processed_image: data.processed_image,
+                message: data.bear_detected 
+                    ? `在圖片中偵測到台灣黑熊！信心度: ${Math.round(data.confidence * 100)}%`
+                    : '未在圖片中偵測到台灣黑熊'
+            });
+        } else { 
+            // 包含了您剛剛提問的【修正點二】：處理後端摘要
+            setDetectionResult({
+                type: 'video',
+                alert_sent: data.alert_sent,
+                max_duration: data.max_consecutive_duration_seconds,
+            });
+        }
 
     } catch (error) {
-      console.error('檢測失敗:', error);
-      setError(`檢測失敗: ${error.message}`);
+        console.error('檢測失敗:', error);
+        setError(`檢測失敗: ${error.message}`);
     } finally {
-      setIsUploading(false);
+        setIsUploading(false);
     }
   }
 
@@ -197,18 +196,20 @@ function App() {
                 )}
                 {/* ... 錯誤與結果顯示 ... */}
                 {error && (<Alert className="border-red-500 bg-red-50"><AlertTriangle className="h-4 w-4 text-red-500" /><AlertTitle>錯誤</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>)}
-                {detectionResult && detectionResult.type === 'image' && (
-                  <div className="space-y-4">
-                    <Alert className={detectionResult.bear_detected ? 'border-red-500 bg-red-50' : 'border-green-500 bg-green-50'}>
-                      {detectionResult.bear_detected ? <AlertTriangle className="h-4 w-4 text-red-500" /> : <CheckCircle className="h-4 w-4 text-green-500" />}
-                      <AlertTitle>{detectionResult.bear_detected ? '⚠️ 偵測到台灣黑熊！' : '✅ 未偵測到黑熊'}</AlertTitle>
-                      <AlertDescription>{detectionResult.message}</AlertDescription>
-                    </Alert>
-                    {detectionResult.processed_image && (
-                      <Card><CardHeader><CardTitle>處理後的圖片</CardTitle><CardDescription>{detectionResult.bear_detected ? '偵測到的黑熊已用綠色框標示' : '原始圖片（未偵測到黑熊）'}</CardDescription></CardHeader><CardContent><img src={`data:image/jpeg;base64,${detectionResult.processed_image}`} alt="處理後的圖片" className="w-full max-w-2xl mx-auto rounded-lg shadow-lg" /></CardContent></Card>
-                    )}
-                  </div>
-                )}
+                {detectionResult && detectionResult.type === 'video' && (
+                <div className="space-y-4">
+                  <Alert className={detectionResult.alert_sent ? 'border-red-500 bg-red-50' : 'border-green-500 bg-green-50'}>
+                    {detectionResult.alert_sent ? <AlertTriangle className="h-4 w-4 text-red-500" /> : <CheckCircle className="h-4 w-4 text-green-500" />}
+                    <AlertTitle>{detectionResult.alert_sent ? '⚠️ 已觸發黑熊預警！' : '✅ 未觸發預警'}</AlertTitle>
+                    <AlertDescription>
+                      影片分析完成。
+                      {detectionResult.alert_sent 
+                        ? '偵測到黑熊連續出現超過2秒，系統已發送 LINE 通知。' 
+                        : `偵測到黑熊最長連續出現時間為 ${detectionResult.max_duration} 秒，未達到 2 秒預警條件。`}
+                    </AlertDescription>
+                  </Alert>
+                </div>
+              )}
               </CardContent>
             </Card>
           </>
