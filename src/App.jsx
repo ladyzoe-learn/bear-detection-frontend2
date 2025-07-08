@@ -196,20 +196,24 @@ function App() {
                 )}
                 {/* ... 錯誤與結果顯示 ... */}
                 {error && (<Alert className="border-red-500 bg-red-50"><AlertTriangle className="h-4 w-4 text-red-500" /><AlertTitle>錯誤</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>)}
-                {detectionResult && detectionResult.type === 'video' && (
-                <div className="space-y-4">
-                  <Alert className={detectionResult.alert_sent ? 'border-red-500 bg-red-50' : 'border-green-500 bg-green-50'}>
-                    {detectionResult.alert_sent ? <AlertTriangle className="h-4 w-4 text-red-500" /> : <CheckCircle className="h-4 w-4 text-green-500" />}
-                    <AlertTitle>{detectionResult.alert_sent ? '⚠️ 已觸發黑熊預警！' : '✅ 未觸發預警'}</AlertTitle>
-                    <AlertDescription>
-                      影片分析完成。
-                      {detectionResult.alert_sent 
-                        ? '偵測到黑熊連續出現超過2秒，系統已發送 LINE 通知。' 
-                        : `偵測到黑熊最長連續出現時間為 ${detectionResult.max_duration} 秒，未達到 2 秒預警條件。`}
-                    </AlertDescription>
-                  </Alert>
-                </div>
-              )}
+                {/* ✅ 修正後的圖片結果顯示區塊 */}
+                {detectionResult && detectionResult.type === 'image' && (
+                  <div className="space-y-4">
+                    <Alert className={detectionResult.bear_detected ? 'border-orange-500 bg-orange-50' : 'border-green-500 bg-green-50'}>
+                      {detectionResult.bear_detected ? <AlertTriangle className="h-4 w-4 text-orange-500" /> : <CheckCircle className="h-4 w-4 text-green-500" />}
+                      <AlertTitle>{detectionResult.bear_detected ? '偵測到目標！' : '未偵測到目標'}</AlertTitle>
+                      <AlertDescription>
+                        {detectionResult.message}
+                      </AlertDescription>
+                    </Alert>
+                    {/* 如果有偵測到，就顯示標示後的圖片 */}
+                    {detectionResult.processed_image && (
+                      <div className="border rounded-lg overflow-hidden">
+                        <img src={`data:image/jpeg;base64,${detectionResult.processed_image}`} alt="Detection Result" />
+                      </div>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </>
@@ -250,14 +254,17 @@ function App() {
               )}
               {/* ... 錯誤與結果顯示 ... */}
               {error && (<Alert className="border-red-500 bg-red-50"><AlertTriangle className="h-4 w-4 text-red-500" /><AlertTitle>錯誤</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>)}
+              {/* ✅ 修正後的影片結果顯示區塊 */}
               {detectionResult && detectionResult.type === 'video' && (
                 <div className="space-y-4">
-                  <Alert className={detectionResult.warning_triggered ? 'border-red-500 bg-red-50' : 'border-green-500 bg-green-50'}>
-                    {detectionResult.warning_triggered ? <AlertTriangle className="h-4 w-4 text-red-500" /> : <CheckCircle className="h-4 w-4 text-green-500" />}
-                    <AlertTitle>{detectionResult.warning_triggered ? '⚠️ 觸發黑熊預警！' : '✅ 未觸發預警'}</AlertTitle>
+                  <Alert className={detectionResult.alert_sent ? 'border-red-500 bg-red-50' : 'border-green-500 bg-green-50'}>
+                    {detectionResult.alert_sent ? <AlertTriangle className="h-4 w-4 text-red-500" /> : <CheckCircle className="h-4 w-4 text-green-500" />}
+                    <AlertTitle>{detectionResult.alert_sent ? '⚠️ 已觸發黑熊預警！' : '✅ 未觸發預警'}</AlertTitle>
                     <AlertDescription>
-                      共處理 {detectionResult.total_frames} 個影格，在 {detectionResult.bear_frames_count} 個影格中偵測到黑熊。
-                      {detectionResult.warning_triggered ? ' 系統已發送 LINE 通知。' : ' 未達到預警條件。'}
+                      影片分析完成。
+                      {detectionResult.alert_sent 
+                        ? '偵測到黑熊連續出現超過2秒，系統已發送 LINE 通知。' 
+                        : `偵測到黑熊最長連續出現時間為 ${detectionResult.max_duration} 秒，未達到 2 秒預警條件。`}
                     </AlertDescription>
                   </Alert>
                 </div>
