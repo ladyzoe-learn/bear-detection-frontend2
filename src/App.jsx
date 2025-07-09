@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button.jsx'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.jsx'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.jsx'
 import './App.css'
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css'
 
 // 👇 請將 'https://your-backend-name.onrender.com' 替換成您真實的後端網址
 const API_BASE_URL = 'https://bear-detection-backend2.onrender.com';
@@ -20,30 +22,36 @@ function App() {
   const [isMapLoading, setIsMapLoading] = useState(true);
 
   // --- 地圖載入邏輯 (不變) ---
-  useEffect(() => {
-    const fetchMap = async () => {
-        setIsMapLoading(true);
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/map`);
-            if (!response.ok) {
-                throw new Error('無法從後端獲取地圖資料');
-            }
-            const data = await response.json();
-            if (data.success) {
-                setMapHtml(data.map_html);
-            } else {
-                throw new Error(data.error || '獲取地圖資料失敗');
-            }
-        } catch (error) {
-            console.error("載入地圖失敗:", error);
-            setMapHtml('<p style="color: red; text-align: center;">地圖載入失敗</p>');
-        } finally {
-            setIsMapLoading(false);
-        }
-    };
-    fetchMap();
-}, []);
+useEffect(() => {
+  setIsMapLoading(true); // 顯示 loading 畫面
 
+  // 初始化 Leaflet 地圖
+  const map = L.map('map').setView([23.97565, 120.97388], 7);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  // 從後端抓取點位資料
+  fetch(`${API_BASE_URL}/api/map-points?start=2015-01-01&end=2025-07-18`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        data.points.forEach(p => {
+          L.marker([p.lat, p.lon])
+            .bindPopup(`<b>ID:</b> ${p.id}<br><b>日期:</b> ${p.date}`)
+            .addTo(map);
+        });
+      } else {
+        console.error("點位資料錯誤:", data.error);
+      }
+    })
+    .catch(err => {
+      console.error("載入點位失敗:", err);
+    })
+    .finally(() => {
+      setIsMapLoading(false); // 關閉 loading 畫面
+    });
+}, []);
   // --- 功能函式 ---
 
   // 【修改】切換頁籤時，清空所有狀態，提供乾淨的介面
@@ -280,7 +288,13 @@ function App() {
             <CardDescription>這裡將顯示台灣黑熊的分布地圖</CardDescription>
           </CardHeader>
           <CardContent className="relative">
-            {isMapLoading ? <div className="flex items-center justify-center h-64"><Loader2 className="h-6 w-6 animate-spin text-gray-500" /></div> : <div className="w-full h-64 overflow-auto" dangerouslySetInnerHTML={{ __html: mapHtml }} />}
+            {isMapLoading ? (
+                <div className="flex items-center justify-center h-64">
+                  <Loader2 className="h-6 w-6 animate-spin text-gray-500" />
+                </div>
+            ) : (
+              <div id="map" className="w-full h-64" />
+            )}
           </CardContent>
         </Card>
         <Card>
