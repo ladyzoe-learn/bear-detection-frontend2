@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>台灣黑熊熱點地圖測試（含群組）</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- Leaflet 核心 -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- MarkerCluster 插件 -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"
+  />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"
+  />
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+    }
+    header {
+      padding: 1rem;
+      background: #f0f0f0;
+      text-align: center;
+      font-weight: bold;
+    }
+    #map {
+      height: 90vh;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <header>🐻 台灣黑熊熱點地圖（支援大量點位群組顯示）</header>
+  <div id="map"></div>
+
+  <script>
+    const map = L.map('map').setView([23.97565, 120.97388], 7);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    const markers = L.markerClusterGroup(); // 建立群組容器
+
+    // 請確認 Flask 後端已啟動於 localhost:10000
+    fetch('http://localhost:10000/api/map-points')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          data.points.forEach(p => {
+            const marker = L.marker([p.lat, p.lon])
+              .bindPopup(`<b>ID:</b> ${p.id}<br><b>日期:</b> ${p.date}`);
+            markers.addLayer(marker);
+          });
+          map.addLayer(markers); // 把所有點加入地圖
+        } else {
+          alert('載入點資料錯誤：' + data.error);
+        }
+      })
+      .catch(err => {
+        alert('地圖載入失敗：' + err.message);
+      });
+  </script>
+</body>
+</html>
