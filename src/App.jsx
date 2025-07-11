@@ -171,17 +171,6 @@ useEffect(() => {
           //   圖片偵測 UI (不變)
           // ========================
           <>
-        <Card>
-          <CardHeader><CardTitle>關於台灣黑熊偵測系統</CardTitle></CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-gray-600">本系統使用先進的 YOLOv8 深度學習模型，專門訓練用於識別台灣黑熊。系統可以幫助研究人員、保育工作者和民眾快速識別野外相機拍攝到的台灣黑熊影像。</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div><h4 className="font-semibold text-gray-800 mb-2">使用方法：</h4><ul className="list-disc list-inside text-gray-600 space-y-1"><li>點擊上方區域選擇圖片或影片</li><li>根據選擇的模式上傳對應檔案</li><li>點擊「開始偵測」按鈕</li><li>等待系統分析結果</li></ul></div>
-              <div><h4 className="font-semibold text-gray-800 mb-2">注意事項：</h4><ul className="list-disc list-inside text-gray-600 space-y-1"><li>建議使用清晰的影像</li><li>檔案大小建議不超過 10MB</li><li>系統會自動標示偵測到的黑熊</li><li>結果僅供參考，請以專業判斷為準</li></ul></div>
-            </div>
-          </CardContent>
-        </Card>
-          
             <Card className="mb-8">
               <CardHeader>
                 <CardTitle className="flex items-center">
