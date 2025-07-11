@@ -210,7 +210,7 @@ function App() {
                 上傳影片進行偵測
               </CardTitle>
               <CardDescription>
-                請上傳影片，系統將逐幀分析，偵測到黑熊時將發送 LINE 提醒
+                請上傳影片，系統將逐幀分析，偵測到黑熊時將發送 Telegram 提醒
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -245,7 +245,7 @@ function App() {
                     <AlertDescription>
                       影片分析完成。
                       {detectionResult.alert_sent 
-                        ? '偵測到黑熊連續出現超過2秒，系統已發送 LINE 通知。' 
+                        ? '偵測到黑熊連續出現超過2秒，系統已發送 Telegram 通知。' 
                         : `偵測到黑熊最長連續出現時間為 ${detectionResult.max_duration} 秒，未達到 2 秒預警條件。`}
                     </AlertDescription>
                   </Alert>
