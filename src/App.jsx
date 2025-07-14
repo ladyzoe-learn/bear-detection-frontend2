@@ -119,7 +119,7 @@ function App() {
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
               <Camera className="h-8 w-8 text-green-600 mr-3" />
-              <h1 className="text-2xl font-bold text-gray-900">台灣黑熊偵測系統</h1>
+              <h1 className="text-2xl font-bold text-gray-900">台灣黑熊偵測預警系統</h1>
             </div>
             <nav>
               <button 
@@ -149,10 +149,10 @@ function App() {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Upload className="h-5 w-5 mr-2" />
-                  上傳影像進行偵測
+                  上傳圖片或影片進行偵測
                 </CardTitle>
                 <CardDescription>
-                  請上傳圖片，系統將自動偵測是否有台灣黑熊出沒
+                  請先選擇右上方使用圖片或影片進行偵測
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -301,7 +301,7 @@ function App() {
 
       <footer className="bg-white border-t mt-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="text-center text-gray-500 text-sm"><p>台灣黑熊偵測系統 © 2024 - 致力於台灣黑熊保育工作</p></div>
+          <div className="text-center text-gray-500 text-sm"><p>台灣黑熊偵測預警系統 © 2025 - 致力於人熊共榮之使命</p></div>
         </div>
       </footer>
     </div>
