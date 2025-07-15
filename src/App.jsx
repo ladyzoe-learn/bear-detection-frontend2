@@ -288,7 +288,7 @@ function App() {
         </Card>
 
         <Card>
-          <CardHeader><CardTitle>關於台灣黑熊偵測系統</CardTitle></CardHeader>
+          <CardHeader><CardTitle>關於台灣黑熊偵測預警系統</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <p className="text-gray-600">本系統使用先進的 YOLOv8 深度學習模型，專門訓練用於識別台灣黑熊。系統可以幫助研究人員、保育工作者和民眾快速識別野外相機拍攝到的台灣黑熊影像。</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
