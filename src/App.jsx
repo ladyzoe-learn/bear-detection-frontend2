@@ -245,8 +245,8 @@ function App() {
                     <AlertDescription>
                       影片分析完成。
                       {detectionResult.alert_sent 
-                        ? '偵測到黑熊連續出現超過2秒，系統已發送 Telegram 通知。' 
-                        : `偵測到黑熊最長連續出現時間為 ${detectionResult.max_duration} 秒，未達到 2 秒預警條件。`}
+                        ? '偵測到黑熊連續出現超過3秒，系統已發送 Telegram 通知。' 
+                        : `偵測到黑熊最長連續出現時間為 ${detectionResult.max_duration} 秒，未達到 3 秒預警條件。`}
                     </AlertDescription>
                   </Alert>
                 </div>
